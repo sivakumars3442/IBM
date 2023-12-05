@@ -1,6 +1,12 @@
 // Create a new express server
 const express = require('express');
 const app = express();
+const rateLimit = require("express-rate-limit");
+// Enable rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+  });
 const AWS = require('ibm-cos-sdk');
 const path = require('path');
 const bodyParser = require("body-parser");
@@ -49,6 +55,7 @@ const multerConfig = {
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(cors());
 
