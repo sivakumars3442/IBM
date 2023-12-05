@@ -56,8 +56,8 @@ app.use(cors());
  * Gets the imageUrl from the client
  */
 app.get('/GetImage', function (req, res) {
-    var relativeImagePath = req.query.path.split("/").length > 1 ? req.query.path : "/" + req.query.path;
-    cos.getObject({
+    const sanitizedPath = path.normalize(req.query.path).replace(/\\/g, '/');
+    var relativeImagePath = sanitizedPath.split("/").length > 1 ? sanitizedPath : "/" + sanitizedPath;    cos.getObject({
         Bucket: awsConfig.bucketName,
         Key: relativeImagePath.substr(1, relativeImagePath.length),
     }).promise().then(function (data) {
