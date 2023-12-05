@@ -658,19 +658,21 @@ function copyMoveOperations(action, req, res) {
                     Bucket: awsConfig.bucketName,
                     Key: data.Prefix.substr(0, data.Prefix.length - 1)
                 }).promise().then(function (data) {
-                    for (var i = 0; i < req.body.names.length; i++) {
-                        var tempPath = path.join("./temp/", data.$response.request.params.Key);
-                        if (path.extname(tempPath) != "") {
-                            cos.putObject({
-                                Bucket: awsConfig.bucketName,
-                                Key: (req.body.targetPath + req.body.names[i]).substr(1, (req.body.targetPath + req.body.names[i]).length),
-                                Body: Buffer.from(data.Body, 'base64'),
-                                ContentType: ContentType
-                            }).promise().then(function (data) {
-                            });
+                    if (Array.isArray(req.body.names)) {
+                        for (var i = 0; i < req.body.names.length; i++) {
+                            var tempPath = path.join("./temp/", data.$response.request.params.Key);
+                            if (path.extname(tempPath) != "") {
+                                cos.putObject({
+                                    Bucket: awsConfig.bucketName,
+                                    Key: (req.body.targetPath + req.body.names[i]).substr(1, (req.body.targetPath + req.body.names[i]).length),
+                                    Body: Buffer.from(data.Body, 'base64'),
+                                    ContentType: ContentType
+                                }).promise().then(function (data) {
+                                });
+                            }
                         }
+                        resolve();
                     }
-                    resolve();
                 });
             }));
         }
